@@ -177,10 +177,6 @@ public class GitHubRCTest {
                     System.out.println("Смайлик пропущен: " + th.getMessage());
                 }
 
-                String statusInput = "xpath=//input[contains(@placeholder, \"What's happening?\")] | //input[@name='message']";
-                waitForElement(driver, selenium, statusInput);
-                selenium.type(statusInput, "Automated Test Status: " + UUID.randomUUID().toString().substring(0, 4));
-
                 String saveStatusButton = "xpath=//button[contains(text(), 'Set status')] | //button[contains(., 'Set status')] | //button[@type='submit' and contains(., 'Set status')]";
                 waitForElement(driver, selenium, saveStatusButton);
                 try {
