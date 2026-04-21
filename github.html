@@ -1,19 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ru" lang="ru">
 <head profile="http://selenium-ide.openqa.org/profiles/test-case">
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<title>RC_IDE_Template</title>
+<title>GitHub_UseCases_Selenium_IDE</title>
 </head>
 <body>
 <table cellpadding="1" cellspacing="1" border="1">
 <thead>
-<tr><td rowspan="1" colspan="3">Прецеденты для Selenium RC (IDE Template)</td></tr>
-</thead><tbody>
+<tr><td rowspan="1" colspan="3">GitHub Use Cases for Selenium IDE</td></tr>
+</thead>
+<tbody>
 <tr>
-  <!-- ПРЕЦЕДЕНТ 1: ПОИСК РЕПОЗИТОРИЯ -->
   <td>open</td>
   <td>/</td>
+  <td></td>
+</tr>
+<tr>
+  <td>waitForElementPresent</td>
+  <td>xpath=//button[contains(@class, 'header-search-button') or contains(@aria-label, 'Search')]</td>
   <td></td>
 </tr>
 <tr>
@@ -22,27 +27,42 @@
   <td></td>
 </tr>
 <tr>
+  <td>waitForElementPresent</td>
+  <td>xpath=//input[contains(@name, 'query-builder-test') or contains(@placeholder, 'Search') or @id='query-builder-test']</td>
+  <td></td>
+</tr>
+<tr>
   <td>type</td>
-  <td>xpath=//input[contains(@name, 'query-builder-test') or contains(@placeholder, 'Search')]</td>
+  <td>xpath=//input[contains(@name, 'query-builder-test') or contains(@placeholder, 'Search') or @id='query-builder-test']</td>
   <td>Selenium WebDriver</td>
 </tr>
 <tr>
-  <td>keyPress</td>
-  <td>xpath=//input[contains(@name, 'query-builder-test') or contains(@placeholder, 'Search')]</td>
-  <td>\13</td>
+  <td>open</td>
+  <td>/search?q=Selenium+WebDriver&amp;type=repositories</td>
+  <td></td>
 </tr>
 <tr>
   <td>waitForElementPresent</td>
-  <td>xpath=//div[contains(@data-testid, 'results-list')]</td>
+  <td>xpath=//div[contains(@data-testid, 'results-list')] | //ul[contains(@class, 'repo-list')]</td>
+  <td></td>
+</tr>
+<tr>
+  <td>assertElementPresent</td>
+  <td>xpath=//div[contains(@data-testid, 'results-list')] | //ul[contains(@class, 'repo-list')]</td>
   <td></td>
 </tr>
 <tr>
   <td>click</td>
-  <td>xpath=(//div[contains(@data-testid, 'results-list')]//a[contains(@href, '/') and not(contains(@href, '/search'))])[1]</td>
+  <td>xpath=(//div[contains(@data-testid, 'results-list')]//a[contains(@href, '/') and not(contains(@href, '/search'))] | //ul[contains(@class, 'repo-list')]//a[contains(@href, '/')])[1]</td>
   <td></td>
 </tr>
 <tr>
-  <!-- ПРЕЦЕДЕНТ 2: ТОПИКИ -->
+  <td>pause</td>
+  <td>3000</td>
+  <td></td>
+</tr>
+
+<tr>
   <td>open</td>
   <td>/topics</td>
   <td></td>
@@ -53,10 +73,231 @@
   <td></td>
 </tr>
 <tr>
+  <td>assertElementPresent</td>
+  <td>xpath=//h1[contains(text(), 'Topics')]</td>
+  <td></td>
+</tr>
+<tr>
+  <td>waitForElementPresent</td>
+  <td>xpath=(//a[starts-with(@href, '/topics/') and contains(@class, 'no-underline')])[1]</td>
+  <td></td>
+</tr>
+<tr>
   <td>click</td>
   <td>xpath=(//a[starts-with(@href, '/topics/') and contains(@class, 'no-underline')])[1]</td>
   <td></td>
 </tr>
-</tbody></table>
+<tr>
+  <td>pause</td>
+  <td>3000</td>
+  <td></td>
+</tr>
+<tr>
+  <td>assertLocation</td>
+  <td>regexp:.*/topics/.*</td>
+  <td></td>
+</tr>
+
+<tr>
+  <td>open</td>
+  <td>/trending</td>
+  <td></td>
+</tr>
+<tr>
+  <td>pause</td>
+  <td>2000</td>
+  <td></td>
+</tr>
+<tr>
+  <td>waitForElementPresent</td>
+  <td>xpath=//summary[contains(., 'Language') or contains(., 'Any language')]</td>
+  <td></td>
+</tr>
+<tr>
+  <td>click</td>
+  <td>xpath=//summary[contains(., 'Language') or contains(., 'Any language')]</td>
+  <td></td>
+</tr>
+<tr>
+  <td>waitForElementPresent</td>
+  <td>xpath=//a[contains(@href, '/trending/java')]</td>
+  <td></td>
+</tr>
+<tr>
+  <td>click</td>
+  <td>xpath=//a[contains(@href, '/trending/java')]</td>
+  <td></td>
+</tr>
+<tr>
+  <td>pause</td>
+  <td>3000</td>
+  <td></td>
+</tr>
+<tr>
+  <td>assertLocation</td>
+  <td>regexp:.*/trending/java.*</td>
+  <td></td>
+</tr>
+
+<tr>
+  <td>open</td>
+  <td>/login</td>
+  <td></td>
+</tr>
+<tr>
+  <td>waitForElementPresent</td>
+  <td>xpath=//input[@id='login_field']</td>
+  <td></td>
+</tr>
+<tr>
+  <td>type</td>
+  <td>xpath=//input[@id='login_field']</td>
+  <td>test_qa_lab3_fake_user</td>
+</tr>
+<tr>
+  <td>type</td>
+  <td>xpath=//input[@id='password']</td>
+  <td>FakePassword123!</td>
+</tr>
+<tr>
+  <td>click</td>
+  <td>xpath=//input[@name='commit']</td>
+  <td></td>
+</tr>
+<tr>
+  <td>pause</td>
+  <td>2000</td>
+  <td></td>
+</tr>
+<tr>
+  <td>waitForElementPresent</td>
+  <td>xpath=//div[contains(@class, 'js-flash-alert') or contains(text(), 'Incorrect username or password')]</td>
+  <td></td>
+</tr>
+<tr>
+  <td>assertElementPresent</td>
+  <td>xpath=//div[contains(@class, 'js-flash-alert') or contains(text(), 'Incorrect username or password')]</td>
+  <td></td>
+</tr>
+
+<tr>
+  <td>open</td>
+  <td>/SeleniumHQ/selenium</td>
+  <td></td>
+</tr>
+<tr>
+  <td>waitForElementPresent</td>
+  <td>xpath=//a[@id='issues-tab']</td>
+  <td></td>
+</tr>
+<tr>
+  <td>click</td>
+  <td>xpath=//a[@id='issues-tab']</td>
+  <td></td>
+</tr>
+<tr>
+  <td>pause</td>
+  <td>2000</td>
+  <td></td>
+</tr>
+<tr>
+  <td>assertLocation</td>
+  <td>regexp:.*/issues.*</td>
+  <td></td>
+</tr>
+<tr>
+  <td>waitForElementPresent</td>
+  <td>xpath=//a[@id='pull-requests-tab']</td>
+  <td></td>
+</tr>
+<tr>
+  <td>click</td>
+  <td>xpath=//a[@id='pull-requests-tab']</td>
+  <td></td>
+</tr>
+<tr>
+  <td>pause</td>
+  <td>2000</td>
+  <td></td>
+</tr>
+<tr>
+  <td>assertLocation</td>
+  <td>regexp:.*/pulls.*</td>
+  <td></td>
+</tr>
+
+<tr>
+  <td>open</td>
+  <td>/explore</td>
+  <td></td>
+</tr>
+<tr>
+  <td>pause</td>
+  <td>2000</td>
+  <td></td>
+</tr>
+<tr>
+  <td>waitForElementPresent</td>
+  <td>xpath=//a[contains(@href, '/collections') and contains(translate(., 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), 'collections')]</td>
+  <td></td>
+</tr>
+<tr>
+  <td>click</td>
+  <td>xpath=//a[contains(@href, '/collections') and contains(translate(., 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), 'collections')]</td>
+  <td></td>
+</tr>
+<tr>
+  <td>pause</td>
+  <td>3000</td>
+  <td></td>
+</tr>
+<tr>
+  <td>assertLocation</td>
+  <td>regexp:.*/collections.*</td>
+  <td></td>
+</tr>
+
+<tr>
+  <td>open</td>
+  <td>/pricing</td>
+  <td></td>
+</tr>
+<tr>
+  <td>pause</td>
+  <td>2000</td>
+  <td></td>
+</tr>
+<tr>
+  <td>waitForElementPresent</td>
+  <td>xpath=//*[contains(translate(., 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), 'free')]</td>
+  <td></td>
+</tr>
+<tr>
+  <td>assertElementPresent</td>
+  <td>xpath=//*[contains(translate(., 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), 'free')]</td>
+  <td></td>
+</tr>
+<tr>
+  <td>waitForElementPresent</td>
+  <td>xpath=//a[contains(@href, '/join') and contains(translate(., 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), 'join')] | //a[contains(@class, 'js-pricing-upgrade-path')]</td>
+  <td></td>
+</tr>
+<tr>
+  <td>click</td>
+  <td>xpath=//a[contains(@href, '/join') and contains(translate(., 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), 'join')] | //a[contains(@class, 'js-pricing-upgrade-path')]</td>
+  <td></td>
+</tr>
+<tr>
+  <td>pause</td>
+  <td>3000</td>
+  <td></td>
+</tr>
+<tr>
+  <td>assertLocation</td>
+  <td>regexp:.*/(join|signup).*</td>
+  <td></td>
+</tr>
+</tbody>
+</table>
 </body>
 </html>

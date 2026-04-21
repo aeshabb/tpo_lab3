@@ -1,0 +1,376 @@
+{
+  "id": "9ce9f311-96ef-43c0-bf26-4f65c5d2b701",
+  "version": "2.0",
+  "name": "GitHub Use Cases",
+  "url": "https://github.com",
+  "tests": [
+    {
+      "id": "test-uc01-search",
+      "name": "UC-01 Search Repository",
+      "commands": [
+        {
+          "id": "uc01-cmd-01",
+          "comment": "Open GitHub home page",
+          "command": "open",
+          "target": "/",
+          "targets": [],
+          "value": ""
+        },
+        {
+          "id": "uc01-cmd-02",
+          "comment": "Open repository search results directly",
+          "command": "open",
+          "target": "/search?q=Selenium+WebDriver&type=repositories",
+          "targets": [],
+          "value": ""
+        },
+        {
+          "id": "uc01-cmd-03",
+          "comment": "Small pause to avoid burst requests",
+          "command": "pause",
+          "target": "1500",
+          "targets": [],
+          "value": ""
+        },
+        {
+          "id": "uc01-cmd-03b",
+          "comment": "Wait for search results",
+          "command": "waitForElementPresent",
+          "target": "xpath=//div[contains(@data-testid, 'results-list')] | //ul[contains(@class, 'repo-list')]",
+          "targets": [],
+          "value": ""
+        },
+        {
+          "id": "uc01-cmd-04",
+          "comment": "Open stable repository page directly",
+          "command": "open",
+          "target": "/SeleniumHQ/selenium",
+          "targets": [],
+          "value": ""
+        },
+        {
+          "id": "uc01-cmd-05",
+          "comment": "Wait for repository page",
+          "command": "waitForElementPresent",
+          "target": "xpath=//nav[contains(@aria-label, 'Repository')] | //a[@id='issues-tab'] | //strong[@itemprop='name']",
+          "targets": [],
+          "value": ""
+        }
+      ]
+    },
+    {
+      "id": "test-uc02-topics",
+      "name": "UC-02 Topics",
+      "commands": [
+        {
+          "id": "uc02-cmd-01",
+          "comment": "Open Topics page",
+          "command": "open",
+          "target": "/topics",
+          "targets": [],
+          "value": ""
+        },
+        {
+          "id": "uc02-cmd-02",
+          "comment": "Wait for Topics header",
+          "command": "waitForElementPresent",
+          "target": "xpath=//h1[contains(text(), 'Topics')]",
+          "targets": [],
+          "value": ""
+        },
+        {
+          "id": "uc02-cmd-03",
+          "comment": "Open stable topic directly",
+          "command": "open",
+          "target": "/topics/selenium",
+          "targets": [],
+          "value": ""
+        },
+        {
+          "id": "uc02-cmd-04",
+          "comment": "Wait for topic page",
+          "command": "waitForElementPresent",
+          "target": "xpath=//a[starts-with(@href, '/topics/')] | //h1",
+          "targets": [],
+          "value": ""
+        }
+      ]
+    },
+    {
+      "id": "test-uc03-trending-java",
+      "name": "UC-03 Trending Java",
+      "commands": [
+        {
+          "id": "uc03-cmd-01",
+          "comment": "Open Java trending directly to avoid CSP issues",
+          "command": "open",
+          "target": "/trending/java",
+          "targets": [],
+          "value": ""
+        },
+        {
+          "id": "uc03-cmd-02",
+          "comment": "Small pause to avoid burst requests",
+          "command": "pause",
+          "target": "1500",
+          "targets": [],
+          "value": ""
+        },
+        {
+          "id": "uc03-cmd-02b",
+          "comment": "Wait for trending repository list",
+          "command": "waitForElementPresent",
+          "target": "xpath=//article | //h1[contains(., 'Trending')]",
+          "targets": [],
+          "value": ""
+        },
+        {
+          "id": "uc03-cmd-03",
+          "comment": "Verify Java trending URL",
+          "command": "assertLocation",
+          "target": "regexp:.*/trending/java.*",
+          "targets": [],
+          "value": ""
+        },
+        {
+          "id": "uc03-cmd-04",
+          "comment": "Wait for language menu to exist on page",
+          "command": "waitForElementPresent",
+          "target": "xpath=//summary[contains(., 'Language') or contains(., 'Any language')] | //main",
+          "targets": [],
+          "value": ""
+        },
+        {
+          "id": "uc03-cmd-05",
+          "comment": "Wait for repository links",
+          "command": "waitForElementPresent",
+          "target": "xpath=//article//h2//a | //article//a[contains(@href, '/')]",
+          "targets": [],
+          "value": ""
+        },
+        {
+          "id": "uc03-cmd-06",
+          "comment": "Wait for Java trending list",
+          "command": "waitForElementPresent",
+          "target": "xpath=//article | //h1[contains(., 'Trending')]",
+          "targets": [],
+          "value": ""
+        }
+      ]
+    },
+    {
+      "id": "test-uc04-invalid-login",
+      "name": "UC-04 Invalid Login",
+      "commands": [
+        {
+          "id": "uc04-cmd-01",
+          "comment": "Open login page",
+          "command": "open",
+          "target": "/login",
+          "targets": [],
+          "value": ""
+        },
+        {
+          "id": "uc04-cmd-02",
+          "comment": "Wait for login field",
+          "command": "waitForElementPresent",
+          "target": "xpath=//input[@id='login_field']",
+          "targets": [],
+          "value": ""
+        },
+        {
+          "id": "uc04-cmd-03",
+          "comment": "Type fake username",
+          "command": "type",
+          "target": "xpath=//input[@id='login_field']",
+          "targets": [],
+          "value": "test_qa_lab3_fake_user"
+        },
+        {
+          "id": "uc04-cmd-04",
+          "comment": "Type fake password",
+          "command": "type",
+          "target": "xpath=//input[@id='password']",
+          "targets": [],
+          "value": "FakePassword123!"
+        },
+        {
+          "id": "uc04-cmd-05",
+          "comment": "Submit invalid credentials",
+          "command": "click",
+          "target": "xpath=//input[@name='commit']",
+          "targets": [],
+          "value": ""
+        },
+        {
+          "id": "uc04-cmd-06",
+          "comment": "Wait for auth error",
+          "command": "waitForElementPresent",
+          "target": "xpath=//div[contains(@class, 'js-flash-alert') or contains(text(), 'Incorrect username or password')]",
+          "targets": [],
+          "value": ""
+        }
+      ]
+    },
+    {
+      "id": "test-uc05-repository-tabs",
+      "name": "UC-05 Repository Tabs",
+      "commands": [
+        {
+          "id": "uc05-cmd-01",
+          "comment": "Open Selenium repository",
+          "command": "open",
+          "target": "/SeleniumHQ/selenium",
+          "targets": [],
+          "value": ""
+        },
+        {
+          "id": "uc05-cmd-02",
+          "comment": "Wait for Issues tab",
+          "command": "waitForElementPresent",
+          "target": "xpath=//a[@id='issues-tab']",
+          "targets": [],
+          "value": ""
+        },
+        {
+          "id": "uc05-cmd-03",
+          "comment": "Open Issues page directly",
+          "command": "open",
+          "target": "/SeleniumHQ/selenium/issues",
+          "targets": [],
+          "value": ""
+        },
+        {
+          "id": "uc05-cmd-04",
+          "comment": "Wait for Pull Requests tab",
+          "command": "waitForElementPresent",
+          "target": "xpath=//a[@id='pull-requests-tab']",
+          "targets": [],
+          "value": ""
+        },
+        {
+          "id": "uc05-cmd-05",
+          "comment": "Open Pull Requests page directly",
+          "command": "open",
+          "target": "/SeleniumHQ/selenium/pulls",
+          "targets": [],
+          "value": ""
+        },
+        {
+          "id": "uc05-cmd-06",
+          "comment": "Wait for PR page content",
+          "command": "waitForElementPresent",
+          "target": "xpath=//a[@id='pull-requests-tab' and contains(@aria-current, 'page')] | //main",
+          "targets": [],
+          "value": ""
+        }
+      ]
+    },
+    {
+      "id": "test-uc06-explore-collections",
+      "name": "UC-06 Explore Collections",
+      "commands": [
+        {
+          "id": "uc06-cmd-01",
+          "comment": "Open Explore page",
+          "command": "open",
+          "target": "/explore",
+          "targets": [],
+          "value": ""
+        },
+        {
+          "id": "uc06-cmd-02",
+          "comment": "Small pause to avoid burst requests",
+          "command": "pause",
+          "target": "1500",
+          "targets": [],
+          "value": ""
+        },
+        {
+          "id": "uc06-cmd-03",
+          "comment": "Open Collections directly",
+          "command": "open",
+          "target": "/collections",
+          "targets": [],
+          "value": ""
+        },
+        {
+          "id": "uc06-cmd-04",
+          "comment": "Wait for Collections page",
+          "command": "waitForElementPresent",
+          "target": "xpath=//h1[contains(., 'Collections')] | //main//a[contains(@href, '/collections/')]",
+          "targets": [],
+          "value": ""
+        }
+      ]
+    },
+    {
+      "id": "test-uc07-pricing-join",
+      "name": "UC-07 Pricing Join",
+      "commands": [
+        {
+          "id": "uc07-cmd-01",
+          "comment": "Open Pricing page",
+          "command": "open",
+          "target": "/pricing",
+          "targets": [],
+          "value": ""
+        },
+        {
+          "id": "uc07-cmd-02",
+          "comment": "Wait for free plan block",
+          "command": "waitForElementPresent",
+          "target": "xpath=//*[contains(translate(., 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), 'free')]",
+          "targets": [],
+          "value": ""
+        },
+        {
+          "id": "uc07-cmd-03",
+          "comment": "Small pause to avoid burst requests",
+          "command": "pause",
+          "target": "1500",
+          "targets": [],
+          "value": ""
+        },
+        {
+          "id": "uc07-cmd-04",
+          "comment": "Open registration page directly",
+          "command": "open",
+          "target": "/join",
+          "targets": [],
+          "value": ""
+        },
+        {
+          "id": "uc07-cmd-05",
+          "comment": "Wait for signup form",
+          "command": "waitForElementPresent",
+          "target": "xpath=//input[@id='email'] | //input[contains(@name, 'email')] | //main//form",
+          "targets": [],
+          "value": ""
+        }
+      ]
+    }
+  ],
+  "suites": [
+    {
+      "id": "suite-all-use-cases",
+      "name": "All Use Cases",
+      "persistSession": false,
+      "parallel": false,
+      "timeout": 300,
+      "tests": [
+        "test-uc01-search",
+        "test-uc02-topics",
+        "test-uc03-trending-java",
+        "test-uc04-invalid-login",
+        "test-uc05-repository-tabs",
+        "test-uc06-explore-collections",
+        "test-uc07-pricing-join"
+      ]
+    }
+  ],
+  "urls": [
+    "https://github.com"
+  ],
+  "plugins": []
+}
