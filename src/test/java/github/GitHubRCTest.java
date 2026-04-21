@@ -142,15 +142,7 @@ public class GitHubRCTest {
                 selenium.open("/" + username);
                 waitForLocation(driver, selenium, "/" + username);
 
-                String avatarButton = "xpath=//img[@alt='User avatar']";
-                if (isElementPresent(selenium, avatarButton)) {
-                    try {
-                        selenium.click(avatarButton);
-                    } catch (Exception ignored) {
-                    }
-                }
-
-                String editStatusButton = "xpath=//span[@id='_r_1i_--label']/div/div | //button[contains(@aria-label, 'Set status')] | //button[contains(@aria-label, 'Edit status')] | //button[contains(., 'Set status')] | //button[contains(., 'Edit status')] | //summary[contains(@aria-label, 'Set status')] | //a[contains(., 'Set status')]";
+                String editStatusButton = "xpath=//button[contains(@aria-label, 'Set status')] | //button[contains(@aria-label, 'Edit status')] | //button[contains(., 'Set status')] | //button[contains(., 'Edit status')] | //summary[contains(@aria-label, 'Set status')] | //a[contains(., 'Set status')]";
                 waitForElement(driver, selenium, editStatusButton);
                 try {
                     selenium.click(editStatusButton);
@@ -158,24 +150,9 @@ public class GitHubRCTest {
                     driver.findElement(By.xpath(xpathFromLocator(editStatusButton))).click();
                 }
 
-                String emojiPickerButton = "xpath=//span[@id='_r_1i_--label']/div/div | //button[contains(@aria-label, 'Choose an emoji')] | //summary[contains(@aria-label, 'Choose an emoji')] | //g-emoji[contains(@class, 'g-emoji')] | //button[contains(@class, 'status-emoji')]";
-                try {
-                    waitForElement(driver, selenium, emojiPickerButton);
-                    try {
-                        selenium.click(emojiPickerButton);
-                    } catch (Exception ignored) {
-                        driver.findElement(By.xpath(xpathFromLocator(emojiPickerButton))).click();
-                    }
-
-                    String smileEmoji = "xpath=//span[@id='_r_1i_--label']/div/div | //button[@title='smile'] | //button[@title='grinning face'] | //g-emoji[@alias='grinning'] | //div[contains(@class, 'emoji-picker')]//button[contains(@aria-label, 'grinning')]";
-                    waitForElement(driver, selenium, smileEmoji);
-                    try {
-                        selenium.click(smileEmoji);
-                    } catch (Exception ignored) {
-                    }
-                } catch (Throwable th) {
-                    System.out.println("Смайлик пропущен: " + th.getMessage());
-                }
+                String statusInput = "xpath=//input[contains(@placeholder, \"What's happening?\")] | //input[@name='message']";
+                waitForElement(driver, selenium, statusInput);
+                selenium.type(statusInput, "🙂");
 
                 String saveStatusButton = "xpath=//button[contains(text(), 'Set status')] | //button[contains(., 'Set status')] | //button[@type='submit' and contains(., 'Set status')]";
                 waitForElement(driver, selenium, saveStatusButton);
