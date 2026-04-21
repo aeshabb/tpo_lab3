@@ -158,7 +158,7 @@ public class GitHubRCTest {
                     } catch (Exception ignored) {
                     }
 
-                    String smileEmoji = "xpath=//button[@title='smile'] | //button[@title='grinning face'] | //g-emoji[@alias='grinning'] | //div[contains(@class, 'emoji-picker')]//button[contains(@aria-label, 'grinning')]";
+                    String smileEmoji = "xpath=//span[@id='_r_1i_--label']/div/div | //button[@title='smile'] | //button[@title='grinning face'] | //g-emoji[@alias='grinning'] | //div[contains(@class, 'emoji-picker')]//button[contains(@aria-label, 'grinning')]";
                     waitForElement(driver, selenium, smileEmoji);
                     try {
                         selenium.click(smileEmoji);
