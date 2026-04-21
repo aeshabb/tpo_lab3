@@ -77,6 +77,13 @@ public class GitHubRCTest {
         return driver.findElement(By.xpath("//meta[@name='user-login' and normalize-space(@content) != '']")).getAttribute("content");
     }
 
+    private String xpathFromLocator(String locator) {
+        if (locator != null && locator.startsWith("xpath=")) {
+            return locator.substring("xpath=".length());
+        }
+        return locator;
+    }
+
     @ParameterizedTest
     @ValueSource(strings = {"chrome", "firefox"})
     public void testMainUseCase(String browser) {
@@ -136,7 +143,7 @@ public class GitHubRCTest {
                 try {
                     selenium.click(createRepoButton);
                 } catch (Throwable e) {
-                    selenium.runScript("document.evaluate(\"" + createRepoButton.split("=")[1] + "\", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.click();");
+                    driver.findElement(By.xpath(xpathFromLocator(createRepoButton))).click();
                 }
 
                 boolean repoCreated = false;
