@@ -139,10 +139,16 @@ public class GitHubRCTest {
                     System.out.println("Экшены не настроились: " + e.getMessage());
                 }
 
-                selenium.open("/" + username);
-                waitForLocation(driver, selenium, "/" + username);
+                selenium.open("/");
+                String headerAvatarButton = "xpath=//button[contains(@aria-label, 'Open user account menu')] | //summary[contains(@aria-label, 'View profile and more')] | //img[@alt='@" + username + "'] | //img[@alt='User avatar']/ancestor::button[1] | //img[@alt='User avatar']/ancestor::summary[1]";
+                waitForElement(driver, selenium, headerAvatarButton);
+                try {
+                    selenium.click(headerAvatarButton);
+                } catch (Exception ex) {
+                    driver.findElement(By.xpath(xpathFromLocator(headerAvatarButton))).click();
+                }
 
-                String editStatusButton = "xpath=//button[contains(@aria-label, 'Set status')] | //button[contains(@aria-label, 'Edit status')] | //button[contains(., 'Set status')] | //button[contains(., 'Edit status')] | //summary[contains(@aria-label, 'Set status')] | //a[contains(., 'Set status')]";
+                String editStatusButton = "xpath=//button[contains(@aria-label, 'Set status')] | //button[contains(@aria-label, 'Edit status')] | //button[contains(., 'Set status')] | //button[contains(., 'Edit status')] | //span[contains(., 'Set status')]/ancestor::button[1] | //a[contains(., 'Set status')]";
                 waitForElement(driver, selenium, editStatusButton);
                 try {
                     selenium.click(editStatusButton);
