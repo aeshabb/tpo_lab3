@@ -142,7 +142,15 @@ public class GitHubRCTest {
                 selenium.open("/" + username);
                 waitForLocation(driver, selenium, "/" + username);
 
-                String editStatusButton = "xpath=//button[contains(@aria-label, 'Set status')] | //button[contains(@aria-label, 'Edit status')] | //button[contains(., 'Set status')] | //button[contains(., 'Edit status')] | //summary[contains(@aria-label, 'Set status')] | //a[contains(., 'Set status')]";
+                String avatarButton = "xpath=//img[@alt='User avatar']";
+                if (isElementPresent(selenium, avatarButton)) {
+                    try {
+                        selenium.click(avatarButton);
+                    } catch (Exception ignored) {
+                    }
+                }
+
+                String editStatusButton = "xpath=//span[@id='_r_1i_--label']/div/div | //button[contains(@aria-label, 'Set status')] | //button[contains(@aria-label, 'Edit status')] | //button[contains(., 'Set status')] | //button[contains(., 'Edit status')] | //summary[contains(@aria-label, 'Set status')] | //a[contains(., 'Set status')]";
                 waitForElement(driver, selenium, editStatusButton);
                 try {
                     selenium.click(editStatusButton);
