@@ -9,17 +9,13 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.openqa.selenium.By;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxOptions;
+import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-import java.util.List;
 import java.util.UUID;
 import java.util.function.Supplier;
-
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class GitHubRCTest {
@@ -62,26 +58,23 @@ public class GitHubRCTest {
     private void waitForLocation(WebDriver driver, Selenium selenium, String expectedLocationPart) {
         waitUntil(driver,
                 "Не дождались частичного совпадения URL: " + expectedLocationPart + ", актуальный URL: " + selenium.getLocation(),
-                () -> selenium.getLocation().contains(expectedLocationPart));
+                () -> selenium.getLocation() != null && selenium.getLocation().contains(expectedLocationPart));
     }
 
-    private void waitForAnyLocation(WebDriver driver, Selenium selenium, String... expectedLocationParts) {
-        waitUntil(driver, "Не дождались одного из ожидаемых URL", () -> {
-            String curr = selenium.getLocation();
-            for (String part : expectedLocationParts) {
-                if (curr != null && curr.contains(part)) return true;
-            }
-            return false;
-        });
+    private boolean isTwoFactorPage(WebDriver driver) {
+        return driver.getCurrentUrl().contains("/sessions/two-factor")
+                || !driver.findElements(By.xpath("//input[@name='app_otp' or contains(@autocomplete, 'one-time-code')]" )).isEmpty();
     }
 
-    private void waitForXpath(WebDriver driver, String xpath) {
-        waitUntil(driver, "Не дождались элемента по xpath: " + xpath, () -> !driver.findElements(By.xpath(xpath)).isEmpty());
+    private boolean isLoggedIn(WebDriver driver) {
+        return !driver.findElements(By.xpath("//meta[@name='user-login' and normalize-space(@content) != '']")).isEmpty();
     }
 
-    private void clickXpath(WebDriver driver, String xpath) {
-        waitForXpath(driver, xpath);
-        driver.findElement(By.xpath(xpath)).click();
+    private String getLoggedInUsername(WebDriver driver) {
+        waitUntil(driver,
+                "Не удалось определить username текущего пользователя",
+                () -> isLoggedIn(driver));
+        return driver.findElement(By.xpath("//meta[@name='user-login' and normalize-space(@content) != '']")).getAttribute("content");
     }
 
     @ParameterizedTest
@@ -104,70 +97,69 @@ public class GitHubRCTest {
 
             boolean isLoggedIn = false;
             try {
-                new WebDriverWait(driver, 5).until(ignored -> {
-                    String url = selenium.getLocation();
-                    return url != null && !url.contains("/login") && !url.contains("/session");
-                });
-                // verify profile dropdown btn
-                String profileBtn = "xpath=//summary[contains(@aria-label, 'View profile')] | //button[contains(@aria-label, 'Open user account')] | //img[@class='avatar circle'] | //AppHeader-user";
-                isLoggedIn = isElementPresent(selenium, profileBtn) || !driver.findElements(By.xpath("//button[contains(@aria-label, 'Open user account')]")).isEmpty();
-                isLoggedIn = true; // assume yes if url changed and no error
-            } catch (Exception e) {}
-
-            try {
-                 if (isElementPresent(selenium, "xpath=//div[contains(@class, 'js-flash-alert') or contains(text(), 'Incorrect username or password')]")) {
-                     isLoggedIn = false;
-                 }
-            } catch (Exception e) {}
+                new WebDriverWait(driver, 10).until(ignored ->
+                        isLoggedIn(driver)
+                                || isTwoFactorPage(driver)
+                                || isElementPresent(selenium, "xpath=//div[contains(@class, 'js-flash-alert') or contains(text(), 'Incorrect username or password')]")
+                );
+                isLoggedIn = isLoggedIn(driver);
+            } catch (Exception ignored) {
+            }
 
             if (isLoggedIn) {
-                // Вход успешен
                 System.out.println("Успешный вход! Запуск тестов с авторизацией: создание репо, настройка экшена, статус...");
-                
-                // 1. Создание репозитория
+
+                String username = getLoggedInUsername(driver);
+
                 String repoName = "test-repo-" + UUID.randomUUID().toString().substring(0, 8);
                 selenium.open("/new");
-                String repoNameInput = "xpath=//input[@name='repository[name]'] | //input[contains(@id, 'repository_name')] | //input[contains(@aria-label, 'Repository name')]";
+
+                String repoNameInput = "xpath=//input[@name='repository[name]']"
+                        + " | //input[contains(@id, 'repository_name')]"
+                        + " | //input[contains(@aria-label, 'Repository name')]"
+                        + " | //label[contains(., 'Repository name')]/following::input[1]"
+                        + " | (//form//input[@type='text' and not(@name='description') and not(@name='owner')])[1]";
                 waitForElement(driver, selenium, repoNameInput);
                 selenium.type(repoNameInput, repoName);
-                
+
                 try {
-                    String autoInitCheckbox = "xpath=//input[@id='repository_auto_init']";
+                    String autoInitCheckbox = "xpath=//input[@id='repository_auto_init'] | //input[@name='repository[auto_init]']";
                     if (isElementPresent(selenium, autoInitCheckbox)) {
                         selenium.click(autoInitCheckbox);
                     }
-                } catch(Throwable e) {}
-                
+                } catch (Throwable ignored) {
+                }
+
                 String createRepoButton = "xpath=//button[contains(text(), 'Create repository')] | //button[contains(., 'Create repository')] | //button[@type='submit' and contains(normalize-space(), 'Create')]";
                 waitForElement(driver, selenium, createRepoButton);
-                
+
                 try {
                     selenium.click(createRepoButton);
-                } catch(Throwable e) {
+                } catch (Throwable e) {
                     selenium.runScript("document.evaluate(\"" + createRepoButton.split("=")[1] + "\", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.click();");
                 }
-                
+
                 boolean repoCreated = false;
                 try {
                     waitForLocation(driver, selenium, repoName);
                     repoCreated = true;
-                } catch(Throwable e) {}
+                } catch (Throwable ignored) {
+                }
 
                 if (repoCreated) {
-                    // 2. Добавление экшена
-                    String actionsTab = "xpath=//a[contains(@data-selected-links, 'repo_actions')] | //span[contains(text(), 'Actions')]/parent::a | //a[@id='actions-tab']";
+                    String actionsTab = "xpath=//a[contains(@data-selected-links, 'repo_actions')] | //span[contains(text(), 'Actions')]/parent::a | //a[@id='actions-tab'] | //a[contains(@href, '/actions')]";
                     try {
+                        selenium.open("/" + username + "/" + repoName + "/actions");
                         waitForElement(driver, selenium, actionsTab);
-                        selenium.click(actionsTab);
-                        
+
                         String configureWorkflow = "xpath=//a[contains(@href, '/new?workflow=')] | //button[contains(., 'Configure')] | //a[contains(., 'set up a workflow yourself')]";
                         waitForElement(driver, selenium, configureWorkflow);
                         selenium.click(configureWorkflow);
-                        
+
                         String commitButton = "xpath=//button[contains(., 'Commit changes')] | //span[text()='Commit changes...']/parent::button | //button[@id='submit-file']";
                         waitForElement(driver, selenium, commitButton);
                         selenium.click(commitButton);
-                        
+
                         String confirmCommitButton = "xpath=//button[contains(@id, 'submit-file')] | //button[contains(., 'Commit changes')]";
                         waitForElement(driver, selenium, confirmCommitButton);
                         selenium.click(confirmCommitButton);
@@ -176,43 +168,57 @@ public class GitHubRCTest {
                     }
                 }
 
-                // 3. Установка статуса-эмодзи
                 selenium.open("/");
                 String profileMenuBtn = "xpath=//summary[contains(@aria-label, 'View profile')] | //button[contains(@aria-label, 'Open user account')] | //img[@class='avatar circle'] | //AppHeader-user";
                 waitForElement(driver, selenium, profileMenuBtn);
-                try { selenium.click(profileMenuBtn); } catch(Exception ex) {}
-                
+                try {
+                    selenium.click(profileMenuBtn);
+                } catch (Exception ignored) {
+                }
+
                 String editStatusButton = "xpath=//button[contains(@aria-label, 'Set status')] | //button[contains(., 'Set status')] | //span[contains(., 'Set status')]/.. | //summary[contains(@aria-label, 'Set status')] | //a[contains(., 'Set status')]";
                 waitForElement(driver, selenium, editStatusButton);
-                try { selenium.click(editStatusButton); } catch(Exception ex) {
-                   selenium.runScript("document.evaluate(\"//button[contains(@aria-label, 'Set status')] | //button[contains(., 'Set status')] | //span[contains(., 'Set status')]/..\", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.click();");
+                try {
+                    selenium.click(editStatusButton);
+                } catch (Exception ex) {
+                    selenium.runScript("document.evaluate(\"//button[contains(@aria-label, 'Set status')] | //button[contains(., 'Set status')] | //span[contains(., 'Set status')]/..\", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.click();");
                 }
-                
+
                 String emojiPickerButton = "xpath=//button[contains(@aria-label, 'Choose an emoji')] | //summary[contains(@aria-label, 'Choose an emoji')] | //g-emoji[contains(@class, 'g-emoji')] | //button[contains(@class, 'status-emoji')]";
                 try {
-                waitForElement(driver, selenium, emojiPickerButton);
-                try { selenium.click(emojiPickerButton); } catch(Exception ex) {}
-                
-                String smileEmoji = "xpath=//button[@title='smile'] | //button[@title='grinning face'] | //g-emoji[@alias='grinning'] | //div[contains(@class, 'emoji-picker')]//button[contains(@aria-label, 'grinning')]";
-                waitForElement(driver, selenium, smileEmoji);
-                try { selenium.click(smileEmoji); } catch(Exception ex) {}
-                } catch(Throwable th) {
-                System.out.println("Смайлик пропущен: " + th.getMessage());
+                    waitForElement(driver, selenium, emojiPickerButton);
+                    try {
+                        selenium.click(emojiPickerButton);
+                    } catch (Exception ignored) {
+                    }
+
+                    String smileEmoji = "xpath=//button[@title='smile'] | //button[@title='grinning face'] | //g-emoji[@alias='grinning'] | //div[contains(@class, 'emoji-picker')]//button[contains(@aria-label, 'grinning')]";
+                    waitForElement(driver, selenium, smileEmoji);
+                    try {
+                        selenium.click(smileEmoji);
+                    } catch (Exception ignored) {
+                    }
+                } catch (Throwable th) {
+                    System.out.println("Смайлик пропущен: " + th.getMessage());
                 }
-                
+
                 String statusInput = "xpath=//input[contains(@placeholder, \"What's happening?\")] | //input[@name='message']";
                 waitForElement(driver, selenium, statusInput);
                 selenium.type(statusInput, "Automated Test Status: " + UUID.randomUUID().toString().substring(0, 4));
-                
+
                 String saveStatusButton = "xpath=//button[contains(text(), 'Set status')] | //button[contains(., 'Set status')] | //button[@type='submit' and contains(., 'Set status')]";
                 waitForElement(driver, selenium, saveStatusButton);
-                try { selenium.click(saveStatusButton); } catch(Exception ex) {}
-                
+                try {
+                    selenium.click(saveStatusButton);
+                } catch (Exception ignored) {
+                }
             } else {
-                // Вход неудачен -> другие тесты
+                if (isTwoFactorPage(driver)) {
+                    throw new AssertionError("GitHub запросил 2FA, поэтому авторизованный сценарий не может продолжиться автоматически");
+                }
+
                 System.out.println("Вход не выполнен. Запуск неавторизованных тестов: поиск, топики, тренды...");
-                
-                // Search
+
                 selenium.open("/");
                 String searchQ = "Selenium";
                 selenium.open("/search?q=" + searchQ + "&type=repositories");
@@ -221,27 +227,29 @@ public class GitHubRCTest {
                 waitForElement(driver, selenium, firstRepoResultLocator);
                 selenium.click(firstRepoResultLocator);
 
-                // Explore Topics
                 selenium.open("/explore");
                 String topicsHeaderLocator = "xpath=//a[contains(@href, '/topics')] | //h2[contains(text(), 'Topics')]/following-sibling::a";
                 waitForElement(driver, selenium, topicsHeaderLocator);
-                try { selenium.click(topicsHeaderLocator); } catch(Exception ex) {}
+                try {
+                    selenium.click(topicsHeaderLocator);
+                } catch (Exception ignored) {
+                }
                 waitForLocation(driver, selenium, "/topics");
 
-                // Trending 
                 selenium.open("/trending");
                 String trendingTab = "xpath=//a[contains(@href, '/trending/java')] | //span[contains(text(), 'Spoken Language')]/.. | //summary[contains(., 'Spoken Language')]";
                 try {
                     waitForElement(driver, selenium, trendingTab);
                     selenium.click(trendingTab);
-                } catch (Throwable e) {}
-                
-                // Pricing
+                } catch (Throwable ignored) {
+                }
+
                 selenium.open("/pricing");
                 String freePlanHeader = "xpath=//h2[contains(text(), 'Free')] | //h3[contains(text(), 'Free')]";
                 try {
                     waitForElement(driver, selenium, freePlanHeader);
-                } catch(Throwable ex) {}
+                } catch (Throwable ignored) {
+                }
             }
         } finally {
             if (selenium != null) {
