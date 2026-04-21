@@ -118,61 +118,25 @@ public class GitHubRCTest {
 
                 String username = getLoggedInUsername(driver);
 
-                String repoName = "test-repo-" + UUID.randomUUID().toString().substring(0, 8);
-                selenium.open("/new");
-
-                String repoNameInput = "xpath=//input[@name='repository[name]']"
-                        + " | //input[contains(@id, 'repository_name')]"
-                        + " | //input[contains(@aria-label, 'Repository name')]"
-                        + " | //label[contains(., 'Repository name')]/following::input[1]"
-                        + " | (//form//input[@type='text' and not(@name='description') and not(@name='owner')])[1]";
-                waitForElement(driver, selenium, repoNameInput);
-                selenium.type(repoNameInput, repoName);
-
+                String repoName = "test";
+                String actionsTab = "xpath=//a[contains(@data-selected-links, 'repo_actions')] | //span[contains(text(), 'Actions')]/parent::a | //a[@id='actions-tab'] | //a[contains(@href, '/actions')]";
                 try {
-                    String autoInitCheckbox = "xpath=//input[@id='repository_auto_init'] | //input[@name='repository[auto_init]']";
-                    if (isElementPresent(selenium, autoInitCheckbox)) {
-                        selenium.click(autoInitCheckbox);
-                    }
-                } catch (Throwable ignored) {
-                }
+                    selenium.open("/" + username + "/" + repoName + "/actions");
+                    waitForElement(driver, selenium, actionsTab);
 
-                String createRepoButton = "xpath=//button[contains(text(), 'Create repository')] | //button[contains(., 'Create repository')] | //button[@type='submit' and contains(normalize-space(), 'Create')]";
-                waitForElement(driver, selenium, createRepoButton);
+                    String configureWorkflow = "xpath=//a[contains(@href, '/new?workflow=')] | //button[contains(., 'Configure')] | //a[contains(., 'set up a workflow yourself')]";
+                    waitForElement(driver, selenium, configureWorkflow);
+                    selenium.click(configureWorkflow);
 
-                try {
-                    selenium.click(createRepoButton);
+                    String commitButton = "xpath=//button[contains(., 'Commit changes')] | //span[text()='Commit changes...']/parent::button | //button[@id='submit-file']";
+                    waitForElement(driver, selenium, commitButton);
+                    selenium.click(commitButton);
+
+                    String confirmCommitButton = "xpath=//button[contains(@id, 'submit-file')] | //button[contains(., 'Commit changes')]";
+                    waitForElement(driver, selenium, confirmCommitButton);
+                    selenium.click(confirmCommitButton);
                 } catch (Throwable e) {
-                    driver.findElement(By.xpath(xpathFromLocator(createRepoButton))).click();
-                }
-
-                boolean repoCreated = false;
-                try {
-                    waitForLocation(driver, selenium, repoName);
-                    repoCreated = true;
-                } catch (Throwable ignored) {
-                }
-
-                if (repoCreated) {
-                    String actionsTab = "xpath=//a[contains(@data-selected-links, 'repo_actions')] | //span[contains(text(), 'Actions')]/parent::a | //a[@id='actions-tab'] | //a[contains(@href, '/actions')]";
-                    try {
-                        selenium.open("/" + username + "/" + repoName + "/actions");
-                        waitForElement(driver, selenium, actionsTab);
-
-                        String configureWorkflow = "xpath=//a[contains(@href, '/new?workflow=')] | //button[contains(., 'Configure')] | //a[contains(., 'set up a workflow yourself')]";
-                        waitForElement(driver, selenium, configureWorkflow);
-                        selenium.click(configureWorkflow);
-
-                        String commitButton = "xpath=//button[contains(., 'Commit changes')] | //span[text()='Commit changes...']/parent::button | //button[@id='submit-file']";
-                        waitForElement(driver, selenium, commitButton);
-                        selenium.click(commitButton);
-
-                        String confirmCommitButton = "xpath=//button[contains(@id, 'submit-file')] | //button[contains(., 'Commit changes')]";
-                        waitForElement(driver, selenium, confirmCommitButton);
-                        selenium.click(confirmCommitButton);
-                    } catch (Throwable e) {
-                        System.out.println("Экшены не настроились: " + e.getMessage());
-                    }
+                    System.out.println("Экшены не настроились: " + e.getMessage());
                 }
 
                 selenium.open("/");
