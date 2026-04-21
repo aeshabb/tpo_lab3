@@ -158,12 +158,13 @@ public class GitHubRCTest {
                     driver.findElement(By.xpath(xpathFromLocator(editStatusButton))).click();
                 }
 
-                String emojiPickerButton = "xpath=//button[contains(@aria-label, 'Choose an emoji')] | //summary[contains(@aria-label, 'Choose an emoji')] | //g-emoji[contains(@class, 'g-emoji')] | //button[contains(@class, 'status-emoji')]";
+                String emojiPickerButton = "xpath=//span[@id='_r_1i_--label']/div/div | //button[contains(@aria-label, 'Choose an emoji')] | //summary[contains(@aria-label, 'Choose an emoji')] | //g-emoji[contains(@class, 'g-emoji')] | //button[contains(@class, 'status-emoji')]";
                 try {
                     waitForElement(driver, selenium, emojiPickerButton);
                     try {
                         selenium.click(emojiPickerButton);
                     } catch (Exception ignored) {
+                        driver.findElement(By.xpath(xpathFromLocator(emojiPickerButton))).click();
                     }
 
                     String smileEmoji = "xpath=//span[@id='_r_1i_--label']/div/div | //button[@title='smile'] | //button[@title='grinning face'] | //g-emoji[@alias='grinning'] | //div[contains(@class, 'emoji-picker')]//button[contains(@aria-label, 'grinning')]";
