@@ -139,20 +139,15 @@ public class GitHubRCTest {
                     System.out.println("Экшены не настроились: " + e.getMessage());
                 }
 
-                selenium.open("/");
-                String profileMenuBtn = "xpath=//summary[contains(@aria-label, 'View profile')] | //button[contains(@aria-label, 'Open user account')] | //img[@class='avatar circle'] | //AppHeader-user";
-                waitForElement(driver, selenium, profileMenuBtn);
-                try {
-                    selenium.click(profileMenuBtn);
-                } catch (Exception ignored) {
-                }
+                selenium.open("/" + username);
+                waitForLocation(driver, selenium, "/" + username);
 
-                String editStatusButton = "xpath=//button[contains(@aria-label, 'Set status')] | //button[contains(., 'Set status')] | //span[contains(., 'Set status')]/.. | //summary[contains(@aria-label, 'Set status')] | //a[contains(., 'Set status')]";
+                String editStatusButton = "xpath=//button[contains(@aria-label, 'Set status')] | //button[contains(@aria-label, 'Edit status')] | //button[contains(., 'Set status')] | //button[contains(., 'Edit status')] | //summary[contains(@aria-label, 'Set status')] | //a[contains(., 'Set status')]";
                 waitForElement(driver, selenium, editStatusButton);
                 try {
                     selenium.click(editStatusButton);
                 } catch (Exception ex) {
-                    selenium.runScript("document.evaluate(\"//button[contains(@aria-label, 'Set status')] | //button[contains(., 'Set status')] | //span[contains(., 'Set status')]/..\", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.click();");
+                    driver.findElement(By.xpath(xpathFromLocator(editStatusButton))).click();
                 }
 
                 String emojiPickerButton = "xpath=//button[contains(@aria-label, 'Choose an emoji')] | //summary[contains(@aria-label, 'Choose an emoji')] | //g-emoji[contains(@class, 'g-emoji')] | //button[contains(@class, 'status-emoji')]";
